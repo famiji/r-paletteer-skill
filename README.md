@@ -21,21 +21,23 @@ paletteer 聚合了来自 79 个 R 包的 **2893+ 个调色板**，是 R 生态�
 
 ## 项目结构
 
+本仓库遵循 [Agent Skills 规范](https://agentskills.io/specification)，Skill 目录即仓库根目录：
+
 ```
-r-paletteer-skill/
-├── README.md
-├── r-paletteer/
-│   ├── SKILL.md                          # 技能定义文件
-│   ├── scripts/
-│   │   ├── palettes_data.py              # 离线调色板数据库（150+ 个，含 HEX 色值）
-│   │   ├── query_paletteer.py            # 查询脚本
-│   │   ├── recommend_palettes.py         # 智能推荐引擎
-│   │   └── generate_palette_viz.py       # 可视化生成器（SVG / HTML）
-│   └── references/
-│       ├── function_reference.md         # paletteer 函数签名完整参考
-│       ├── palettes_catalog.md           # 调色板目录（按源包组织，含 HEX 值）
-│       ├── recommendation_guide.md       # 推荐决策矩阵
-│       └── ggplot2_examples.md           # ggplot2 各图表类型集成示例
+r-paletteer-skill/                     # Skill 根目录（SKILL.md 位于顶层）
+├── SKILL.md                           # 技能定义文件（frontmatter + 指令）
+├── scripts/                           # 可执行代码
+│   ├── palettes_data.py               # 离线调色板数据库（150+ 个，含 HEX 色值）
+│   ├── query_paletteer.py             # 查询脚本
+│   ├── recommend_palettes.py          # 智能推荐引擎
+│   └── generate_palette_viz.py        # 可视化生成器（SVG / HTML）
+├── references/                        # 按需加载的参考文档
+│   ├── function_reference.md          # paletteer 函数签名完整参考
+│   ├── palettes_catalog.md            # 调色板目录（按源包组织，含 HEX 值）
+│   ├── recommendation_guide.md        # 推荐决策矩阵
+│   └── ggplot2_examples.md            # ggplot2 各图表类型集成示例
+├── LICENSE
+└── README.md
 ```
 
 ---

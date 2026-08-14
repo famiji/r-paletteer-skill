@@ -1,6 +1,7 @@
 ---
-name: r-paletteer
+name: r-paletteer-skill
 description: "This skill should be used when working with R's paletteer color package (https://github.com/EmilHvitfeldt/paletteer). It provides comprehensive palette querying, smart recommendation, R code generation, and visualization for the 2893+ color palettes from 79 R packages aggregated by paletteer. Use this skill when users ask about R color palettes, paletteer functions (paletteer_c, paletteer_d, paletteer_dynamic), ggplot2 color scales, color palette selection/recommendation, or need HEX color values for R visualization. Supports Chinese and English input. Triggers include: paletteer, R color palette, R 配色, ggplot2 配色, 调色板, color palette R, palette recommendation, 配色推荐."
+license: MIT
 ---
 
 # R Paletteer — paletteer 配色包便捷使用工具
