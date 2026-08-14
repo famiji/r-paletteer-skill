@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# WorkBuddy internal
+.workbuddy/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary outputs
+*.tmp
