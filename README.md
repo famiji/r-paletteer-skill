@@ -26,11 +26,12 @@ paletteer 聚合了来自 79 个 R 包的 **2893+ 个调色板**，是 R 生态�
 ```
 r-paletteer-skill/                     # Skill 根目录（SKILL.md 位于顶层）
 ├── SKILL.md                           # 技能定义文件（frontmatter + 指令）
-├── scripts/                           # 可执行代码
+├── scripts/                           # 可执行代码（Python + R）
 │   ├── palettes_data.py               # 离线调色板数据库（150+ 个，含 HEX 色值）
-│   ├── query_paletteer.py             # 查询脚本
-│   ├── recommend_palettes.py          # 智能推荐引擎
-│   └── generate_palette_viz.py        # 可视化生成器（SVG / HTML）
+│   ├── query_paletteer.py             # Python 查询脚本
+│   ├── recommend_palettes.py          # Python 智能推荐引擎
+│   ├── generate_palette_viz.py        # Python 可视化生成器（SVG / HTML）
+│   └── paletteer_tools.R              # R 原生工具脚本（直接调用 paletteer）
 ├── references/                        # 按需加载的参考文档
 │   ├── function_reference.md          # paletteer 函数签名完整参考
 │   ├── palettes_catalog.md            # 调色板目录（按源包组织，含 HEX 值）
@@ -98,6 +99,37 @@ python3 scripts/generate_palette_viz.py "nord::aurora" --format html --no-r
 # 生成 SVG
 python3 scripts/generate_palette_viz.py "scico::berlin" --n 10 --format svg --no-r
 ```
+
+### R 原生脚本（需要 R + paletteer）
+
+`scripts/paletteer_tools.R` 直接调用 paletteer 包，可访问**全部 2893+ 个调色板**，并支持作为函数库 `source()` 使用：
+
+```bash
+# CLI 模式（与 Python 脚本参数形状一致）
+Rscript scripts/paletteer_tools.R --get "nord::frost"
+Rscript scripts/paletteer_tools.R --get "pals::ocean.haline" --n 6
+Rscript scripts/paletteer_tools.R --list-by-package wesanderson
+Rscript scripts/paletteer_tools.R --list-by-category qualitative
+Rscript scripts/paletteer_tools.R --search blue
+Rscript scripts/paletteer_tools.R --recommend --n 5 --category qualitative
+Rscript scripts/paletteer_tools.R --r-code "RColorBrewer::Set1"
+Rscript scripts/paletteer_tools.R --ggplot2-code "pals::ocean.haline"
+Rscript scripts/paletteer_tools.R --plot "RColorBrewer::Set1" --save set1.png
+```
+
+作为函数库使用：
+
+```r
+source("scripts/paletteer_tools.R")
+
+paletteer_get("nord::frost")                  # 取颜色
+paletteer_plot("nord::aurora")                # 当前设备绘制色块
+paletteer_plot("nord::aurora", save = "aurora.png")  # 保存 PNG/PDF/SVG
+paletteer_recommend(n_colors = 5, category = "qualitative")  # 推荐
+cat(paletteer_r_code("RColorBrewer::Set1"))  # 生成 R 调用代码
+```
+
+**注意**：`--get` 与 `--plot` 需要对应的源包已安装（如 `wesanderson`、`scico`），否则需先 `install.packages("wesanderson")`。列表、搜索、推荐和代码生成不需要源包。
 
 ---
 

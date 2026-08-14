@@ -1,6 +1,6 @@
 ---
 name: r-paletteer-skill
-description: "This skill should be used when working with R's paletteer color package (https://github.com/EmilHvitfeldt/paletteer). It provides comprehensive palette querying, smart recommendation, R code generation, and visualization for the 2893+ color palettes from 79 R packages aggregated by paletteer. Use this skill when users ask about R color palettes, paletteer functions (paletteer_c, paletteer_d, paletteer_dynamic), ggplot2 color scales, color palette selection/recommendation, or need HEX color values for R visualization. Supports Chinese and English input. Triggers include: paletteer, R color palette, R 配色, ggplot2 配色, 调色板, color palette R, palette recommendation, 配色推荐."
+description: "This skill should be used when working with R's paletteer color package (https://github.com/EmilHvitfeldt/paletteer). It provides comprehensive palette querying, smart recommendation, R code generation, and visualization for the 2893+ color palettes from 79 R packages aggregated by paletteer. Use this skill when users ask about R color palettes, paletteer functions (paletteer_c, paletteer_d, paletteer_dynamic), ggplot2 color scales, color palette selection/recommendation, or need HEX color values for R visualization. Supports Chinese and English input. Includes both Python scripts (offline-capable) and R scripts (native paletteer integration). Triggers include: paletteer, R color palette, R 配色, ggplot2 配色, 调色板, color palette R, palette recommendation, 配色推荐."
 license: MIT
 ---
 
@@ -38,14 +38,15 @@ Use this skill when users:
 
 ### scripts/
 
-Three Python scripts provide the core functionality:
+Four Python scripts (offline-capable, priorize R when available) and one R script (native paletteer integration) provide the core functionality:
 
-| Script | Purpose |
-|--------|---------|
-| `scripts/palettes_data.py` | Embedded offline database of 150+ popular palettes with HEX values, metadata, and bilingual aliases |
-| `scripts/query_paletteer.py` | Query palettes by package/type/category/name; prioritizes live R, falls back to embedded data |
-| `scripts/recommend_palettes.py` | Smart recommendation engine with color analysis, scenario matching, and R code generation |
-| `scripts/generate_palette_viz.py` | Generate SVG or interactive HTML visualizations of palettes |
+| Script | Language | Purpose |
+|--------|----------|---------|
+| `scripts/palettes_data.py` | Python | Embedded offline database of 150+ popular palettes with HEX values, metadata, and bilingual aliases |
+| `scripts/query_paletteer.py` | Python | Query palettes by package/type/category/name; prioritizes live R, falls back to embedded data |
+| `scripts/recommend_palettes.py` | Python | Smart recommendation engine with color analysis, scenario matching, and R code generation |
+| `scripts/generate_palette_viz.py` | Python | Generate SVG or interactive HTML visualizations of palettes |
+| `scripts/paletteer_tools.R` | R | Native R tool: query, recommend, visualize (PNG/PDF/SVG), and generate code; **requires R + paletteer + the corresponding source package** |
 
 ### references/
 
@@ -127,6 +128,48 @@ Returns ranked JSON with: `match_score`, `match_reasons`, `r_code`, `ggplot2_cod
 ```bash
 python3 scripts/query_paletteer.py --list-packages --no-r
 ```
+
+#### Option E: Native R Tool (when R + paletteer is available)
+
+The R script `scripts/paletteer_tools.R` directly calls the `paletteer` package, so it can access **all 2893+ palettes** including palettes not in the Python offline database. It can also be `source()`-loaded as a library of functions.
+
+```bash
+# CLI: same shape as Python scripts, but R-native
+Rscript scripts/paletteer_tools.R --get "nord::frost"
+Rscript scripts/paletteer_tools.R --get "pals::ocean.haline" --n 6     # continuous
+Rscript scripts/paletteer_tools.R --list-by-package wesanderson
+Rscript scripts/paletteer_tools.R --list-by-category qualitative
+Rscript scripts/paletteer_tools.R --search blue
+Rscript scripts/paletteer_tools.R --recommend --n 5 --category qualitative
+
+# Generate paletteer / ggplot2 code
+Rscript scripts/paletteer_tools.R --r-code "RColorBrewer::Set1"
+Rscript scripts/paletteer_tools.R --ggplot2-code "pals::ocean.haline"
+
+# Save a swatch image (PNG / PDF / SVG by extension)
+Rscript scripts/paletteer_tools.R --plot "RColorBrewer::Set1" --save /tmp/set1.png
+```
+
+As a library (R session):
+
+```r
+source("scripts/paletteer_tools.R")
+
+paletteer_get("nord::frost")
+#> $palette_id [1] "nord::frost"
+#> $colors     [1] "#8FBCBB" "#88C0D0" "#81A1C1" "#5E81AC"
+
+# Plot directly to current R device
+paletteer_plot("nord::aurora")
+# Or to a file
+paletteer_plot("nord::aurora", save = "aurora.png")
+
+# Print paletteer / ggplot2 code
+cat(paletteer_r_code("RColorBrewer::Set1"))
+cat(paletteer_ggplot2_code("pals::ocean.haline"))
+```
+
+**Note:** paletteer must look up the actual source package at call time. For `--get` and `--plot`, the corresponding source package (e.g. `wesanderson`, `scico`) must be installed — otherwise install it first with `install.packages("wesanderson")`. Listing, searching, recommending, and code generation work without source packages installed.
 
 ### Step 3: Generate Visualization (Optional)
 
